@@ -1,4 +1,27 @@
 window.onload = function() {
+
+  document.onkeydown = function(e){
+    switch (e.keyCode){
+      case 37:
+        document.getElementsByClassName("left")[0].classList.add("pushed")
+        break;
+      case 39:
+        document.getElementsByClassName("right")[0].classList.add("pushed")
+        break;
+    }
+  }
+
+  document.onkeyup = function(e){
+    switch (e.keyCode){
+      case 37:
+        document.getElementsByClassName("left")[0].classList.remove("pushed")
+        break;
+      case 39:
+        document.getElementsByClassName("right")[0].classList.remove("pushed")
+        break;
+    }
+  }
+
   document.getElementById("start-button").onclick = function() {
     startGame();
   };
@@ -27,20 +50,33 @@ window.onload = function() {
     this.car = new Image()
     this.car.src = "images/car.png"
     this.obstacles.push(new Obstacle)
-    this.gap = getRand(130,230)
+    this.gap = getRand(160,260)
+    this.dashedLine = new SetDashedLine
 
     
-    setInterval(function(){
+    var intervalID = setInterval(function(){
       this.movecar()
       this.drawBackground()
       this.generateObstacles()
       this.ctx.drawImage(this.car, this.carPosition, 350, 50,100)
+      if (this.detectCollision() === true){
+        clearInterval(intervalID)
+      }
 
     }.bind(this),1000/60)
   }
 
   function getRand(min, max){
     return Math.floor(Math.random()* (max - min -1 ) + min)
+  }
+
+  Game.prototype.clearInterval = function(){
+    var crash = false
+    obstacles.forEach(function(obstacle){
+
+    })
+
+
   }
 
   Game.prototype.movecar = function(){
@@ -50,16 +86,30 @@ window.onload = function() {
       switch(e.keyCode){
         case 37:
         if(this.carPosition >= limitLeft) this.carPosition -= 10
+        document.getElementsByClassName("left")[0].classList.add("pushed")
         break
         case 39:
         if(this.carPosition <= limitRight) this.carPosition += 10
+        document.getElementsByClassName("right")[0].classList.add("pushed")
         break
+      }
+    }.bind(this)
+
+    document.onkeyup = function(e){
+      switch (e.keyCode){
+        case 37:
+          document.getElementsByClassName("left")[0].classList.remove("pushed")
+          break;
+        case 39:
+          document.getElementsByClassName("right")[0].classList.remove("pushed")
+          break;
       }
     }.bind(this)
   }
 
   Game.prototype.drawBackground = function(){
     ctx = this.ctx
+    dashed = this.dashedLine
     ctx.clearRect(0,0,300,500)
 
     ctx.fillStyle = "#00811C"
@@ -84,25 +134,23 @@ window.onload = function() {
     ctx.stroke()
     ctx.closePath()
 
-    ctx.beginPath()
     
-    if(this.eval === true){
-      ctx.moveTo(150,0)
-      ctx.lineTo(150,500)
-      this.eval = false
-    } 
-    else{
-      ctx.moveTo(150,8)
-      ctx.lineTo(150,500)
-      this.eval = true
-    } 
-    ctx.lineWidth = 4
-    ctx.strokeStyle = "#fff"
-    ctx.setLineDash([16, 8]);
-
+    ctx.beginPath()
+    if(dashed.start[1] >= 0){
+      dashed.start[1] = -500
+      dashed.end[1] = 500
+    }
+    ctx.moveTo(dashed.start[0],dashed.start[1])
+    ctx.lineTo(dashed.end[0], dashed.end[1])
+    ctx.lineWidth = dashed.wide
+    ctx.strokeStyle = dashed.color
+    ctx.setLineDash(dashed.dash)
     ctx.stroke()
     ctx.closePath()
     ctx.setLineDash([]);
+
+    dashed.start[1]++
+    dashed.end[1]++
 
   }
 
@@ -134,10 +182,18 @@ window.onload = function() {
   }
 
   function Obstacle(){
-    this.wide = getRand(50, 160)
+    this.wide = getRand(50, 130)
     this.posXStart = getRand(45, 255 - this.wide)
     this.posXEnd = this.posXStart + this.wide
     this.posY = 0
+  }
+
+  function SetDashedLine(){
+    this.start = [150, -500]
+    this.end = [150, 500]
+    this.width = 4
+    this.color = "#ffffff"
+    this.dash = [16, 8]
   }
 
   
@@ -145,5 +201,6 @@ window.onload = function() {
     cars = new Game
 
     cars.init()
+    
   }
 };

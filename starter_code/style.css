@@ -17,8 +17,44 @@ body {
   width: 350px;
 }
 
-.arrows-img {
+.keys{
   width: 150px;
+  height: 72px;
+  display: flex;
+  justify-content: space-between;
+  flex-flow: wrap;
+  margin: auto;
+}
+
+.key{
+  width: 32%;
+  height: 46%;
+  background-color: #ccc;
+  border-radius: 4px;
+  color: #ddd;
+  display:flex;
+  justify-content: center;
+  align-items: center;
+}
+.up-row{
+  width: 100%;
+  height: 46%;
+  display: flex;
+  justify-content: center;
+}
+
+.up{
+  height: 100%;
+}
+
+.active{
+  background-color: #000;
+  color: #fff;
+}
+
+.pushed{
+  color: #ccc;
+  background-color: #333;
 }
 
 body button {
